@@ -25,5 +25,9 @@
     },
     "schemas": {}
   },
-  "paths": {}
+  "paths": {
+    "api/search/candidates/{candidateId}":{
+      
+    }
+  }
 }
