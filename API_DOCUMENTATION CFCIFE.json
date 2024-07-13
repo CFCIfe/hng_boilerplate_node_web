@@ -1,0 +1,682 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "JobConnect API",
+    "description": "API for JobConnect job portal",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.jobconnect.com/v1",
+      "description": "Main (production) server"
+    },
+    {
+      "url": "https://staging-api.jobconnect.com",
+      "description": "Internal staging server for testing"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "responses": {
+      "NotFound": {
+        "description": "The specified resource was not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "error"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Not found"
+                }
+              }
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "Unauthorized request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "error"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Invalid token. Unauthorized"
+                }
+              }
+            }
+          }
+        }
+      },
+      "BadRequest": {
+        "description": "Invalid input",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "Bad request"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Wrong ID"
+                }
+              }
+            }
+          }
+        }
+      },
+      "ValidationError": {
+        "description": "Validation Error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "Error"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Validation error"
+                },
+                "errors": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "id is required"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "Job": {
+        "type": "object",
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "example": "12345"
+          },
+          "title": {
+            "type": "string",
+            "example": "Software Developer"
+          },
+          "description": {
+            "type": "string",
+            "example": "Responsible for developing software solutions."
+          },
+          "company": {
+            "type": "string",
+            "example": "Tech Corp"
+          },
+          "location": {
+            "type": "string",
+            "example": "New York, NY"
+          },
+          "work_style": {
+            "type": "string",
+            "enum": ["Remote", "Hybrid", "Onsite"]
+          },
+          "min_salary": {
+            "type": "number",
+            "format": "double",
+            "example": 100000
+          },
+          "max_salary": {
+            "type": "integer",
+            "example": "300000"
+          }
+        },
+        "required": ["title", "description", "company", "location", "salary"]
+      },
+      "Unprotected_Job_Response": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "123e349-12d3-a456-426614174000"
+          },
+          "title": {
+            "type": "string",
+            "example": "Software Developer"
+          },
+          "description": {
+            "type": "string",
+            "example": "Responsible for developing software solutions."
+          },
+          "company": {
+            "type": "string",
+            "example": "Tech Corp"
+          },
+          "location": {
+            "type": "string",
+            "example": "New York, NY"
+          }
+        }
+      },
+      "Employer": {
+        "type": "object",
+        "properties": {
+          "employer_id": {
+            "type": "string",
+            "example": "67890e5-12d3-a456-426614174000"
+          },
+          "company_name": {
+            "type": "string",
+            "example": "Tech Corp"
+          },
+          "point_of_contact": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "example": "John Doe"
+              },
+              "address": {
+                "type": "string",
+                "example": "123 Tech Street, New York, NY"
+              },
+              "contactNumber": {
+                "type": "string",
+                "example": "555-1234"
+              },
+              "email": {
+                "type": "string",
+                "example": "contact@techcorp.com"
+              }
+            }
+          }
+        }
+      },
+      "New_Employer_RequestBody": {
+        "type": "object",
+        "properties": {
+          "employer_id": {
+            "type": "string",
+            "example": "67890e5-12d3-a456-426614174000"
+          },
+          "company_name": {
+            "type": "string",
+            "example": "Tech Corp"
+          },
+          "point_of_contact": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "example": "John Doe"
+              },
+              "address": {
+                "type": "string",
+                "example": "123 Tech Street, New York, NY"
+              },
+              "contactNumber": {
+                "type": "string",
+                "example": "555-1234"
+              },
+              "email": {
+                "type": "string",
+                "example": "john@example.com"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/api/jobs": {
+      "get": {
+        "summary": "Get a list of all jobs",
+        "operationId": "getJobs",
+        "tags": ["Jobs"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of jobs.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "$ref": "#/components/schemas/Job"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new job",
+        "operationId": "createJob",
+        "tags": ["Jobs"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Job object that needs to be added",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Job"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Job"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Job created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Job"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          }
+        }
+      }
+    },
+    "/api/jobs/{jobId}": {
+      "get": {
+        "summary": "Get a job by ID",
+        "operationId": "getJobById",
+        "tags": ["Jobs"],
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "path",
+            "required": true,
+            "description": "ID of the job to retrieve",
+            "schema": {
+              "type": "string",
+              "example": "123e4567-e89b-12d3-a456-426614174000"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Job retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Unprotected_Job_Response"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a job",
+        "operationId": "updateJob",
+        "tags": ["Jobs"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "path",
+            "required": true,
+            "description": "ID of the job to update",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Job object with updated information",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Job"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Job updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Job updated successfully."
+                    },
+                    "data": {
+                      "type": "object",
+                      "$ref": "#/components/schemas/Job"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a job",
+        "operationId": "deleteJob",
+        "tags": ["Jobs"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "path",
+            "required": true,
+            "description": "ID of the job to delete",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Job deleted successfully."
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/employers": {
+      "get": {
+        "summary": "Get a list of all employers",
+        "operationId": "getEmployers",
+        "tags": ["Employers"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of employers.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Employer"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new employer",
+        "operationId": "createEmployer",
+        "tags": ["Employers"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Employer object that needs to be added",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/New_Employer_RequestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Employer created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Employer"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/employers/{employerId}": {
+      "get": {
+        "summary": "Get an employer by ID",
+        "operationId": "getEmployerById",
+        "tags": ["Employers"],
+        "parameters": [
+          {
+            "name": "employerId",
+            "in": "path",
+            "required": true,
+            "description": "ID of the employer to retrieve",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Employer retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Employer"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Employer not found."
+          }
+        }
+      },
+      "put": {
+        "summary": "Update an employer",
+        "operationId": "updateEmployer",
+        "tags": ["Employers"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "employerId",
+            "in": "path",
+            "required": true,
+            "description": "ID of the employer to update",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Employer object with updated information",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Employer"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Employer updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Employer"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Employer not found."
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete an employer",
+        "operationId": "deleteEmployer",
+        "tags": ["Employers"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "employerId",
+            "in": "path",
+            "required": true,
+            "description": "ID of the employer to delete",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Employer deleted successfully."
+          },
+          "404": {
+            "description": "Employer not found."
+          }
+        }
+      }
+    }
+  }
+}
