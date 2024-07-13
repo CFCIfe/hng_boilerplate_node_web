@@ -9,7 +9,9 @@
 - Live URL: `https://example.com/api/v1`
 - Staging URL: `https://staging.example.com/api/v1`
 
-## [Section]
+## [DB DIAGRAM]
+
+![DB DIAGRAM]('HNG BACKEND - JOB POSTING SITE.png')
 
 ### [Endpoint]
 
