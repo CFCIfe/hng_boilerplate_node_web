@@ -1,239 +1,143 @@
 {
-  "openapi": "3.0.0",
-  "info": {
-    "title": "JobConnect API",
-    "description": "API for JobConnect job portal",
-    "version": "1.0.0"
-  },
-  "servers": [
-    {
-      "url": "https://api.jobconnect.com/v1",
-      "description": "Main (production) server"
+    "openapi": "3.0.0",
+    "info": {
+      "title": "JobConnect API",
+      "description": "API for JobConnect job portal",
+      "version": "1.0.0"
     },
-    {
-      "url": "https://localhost/3001",
-      "description": "Internal staging server for testing"
-    }
-  ],
-  "components": {
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT"
-      }
-    },
-    "schemas": {
-      "User": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int64",
-            "example": 1
-          },
-          "firstName": {
-            "type": "string",
-            "example": "Olivia"
-          },
-          "lastName": {
-            "type": "string",
-            "example": "Pope"
-          },
-          "email": {
-            "type": "string",
-            "example": "olivia.pope@example.com"
-          },
-          "password": {
-            "type": "string",
-            "example": "hashedpassword"
-          }
-        },
-        "required": ["firstName", "lastName", "email", "password"]
+    "servers": [
+      {
+        "url": "https://api.jobconnect.com/v1",
+        "description": "Main (production) server"
       },
-      "Candidate": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int64",
-            "example": 1
-          },
-          "firstName": {
-            "type": "string",
-            "example": "Olivia"
-          },
-          "lastName": {
-            "type": "string",
-            "example": "Pope"
-          },
-          "email": {
-            "type": "string",
-            "example": "olivia.pope@example.com"
-          }
-        },
-        "required": ["firstName", "lastName", "email"]
+      {
+        "url": "https://staging-api.jobconnect.com",
+        "description": "Internal staging server for testing"
       }
-    }
-  },
-  "paths": {
-    "/api/auth/register": {
-      "post": {
-        "summary": "Register a new user",
-        "description": "Create a new user account",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/User"
-              }
+    ],
+    "components": {
+      "securitySchemes": {
+        "bearerAuth": {
+          "type": "http",
+          "scheme": "bearer",
+          "bearerFormat": "JWT"
+        }
+      },
+      "schemas": {
+        "Job": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "example": "12345"
+            },
+            "title": {
+              "type": "string",
+              "example": "Software Developer"
+            },
+            "description": {
+              "type": "string",
+              "example": "Responsible for developing software solutions."
+            },
+            "company": {
+              "type": "string",
+              "example": "Tech Corp"
+            },
+            "location": {
+              "type": "string",
+              "example": "New York, NY"
+            },
+            "salary": {
+              "type": "number",
+              "format": "double",
+              "example": 100000
             }
-          }
+          },
+          "required": [
+            "title",
+            "description",
+            "company",
+            "location",
+            "salary"
+          ]
         },
-        "responses": {
-          "201": {
-            "description": "User created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/User"
-                }
-              }
+        "Employer": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "example": "67890"
+            },
+            "name": {
+              "type": "string",
+              "example": "Tech Corp"
+            },
+            "address": {
+              "type": "string",
+              "example": "123 Tech Street, New York, NY"
+            },
+            "contactNumber": {
+              "type": "string",
+              "example": "555-1234"
+            },
+            "email": {
+              "type": "string",
+              "example": "contact@techcorp.com"
             }
-          }
+          },
+          "required": [
+            "name",
+            "address",
+            "contactNumber",
+            "email"
+          ]
         }
       }
     },
-    "/api/auth/login": {
-      "post": {
-        "summary": "Login an existing user",
-        "description": "Authenticate an existing user",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "email": {
-                    "type": "string"
-                  },
-                  "password": {
-                    "type": "string"
-                  }
-                },
-                "required": ["email", "password"]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "User logged in successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "token": {
-                      "type": "string",
-                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ik9saXZpYSBQb3BlIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+    "paths": {
+      "/api/jobs": {
+        "get": {
+          "summary": "Get a list of all jobs",
+          "operationId": "getJobs",
+          "tags": ["Jobs"],
+          "responses": {
+            "200": {
+              "description": "A list of jobs.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/Job"
                     }
                   }
                 }
               }
             }
           }
-        }
-      }
-    },
-    "/api/auth/user": {
-      "get": {
-        "summary": "Get the current user's profile",
-        "description": "Retrieve the current user's profile information",
-        "responses": {
-          "200": {
-            "description": "User profile retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/User"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "summary": "Update the current user's profile",
-        "description": "Update the current user's profile information",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/User"
-              }
-            }
-          }
         },
-        "responses": {
-          "200": {
-            "description": "User profile updated successfully",
+        "post": {
+          "summary": "Create a new job",
+          "operationId": "createJob",
+          "tags": ["Jobs"],
+          "requestBody": {
+            "description": "Job object that needs to be added",
+            "required": true,
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/User"
+                  "$ref": "#/components/schemas/Job"
                 }
               }
             }
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete the current user's profile",
-        "description": "Delete the current user's profile",
-        "responses": {
-          "200": {
-            "description": "User profile deleted successfully"
           },
-          "400": {
-            "description": "Invalid request"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "404": {
-            "description": "User profile not found"
-          }
-        }
-      }
-    },
-    "/api/auth/logout": {
-      "post": {
-        "summary": "Logout the current user",
-        "description": "Logout the current user",
-        "responses": {
-          "200": {
-            "description": "User logged out successfully"
-          }
-        }
-      }
-    },
-    "/api/candidates": {
-      "get": {
-        "summary": "Get a list of all candidates",
-        "description": "Retrieve a list of all candidates",
-        "responses": {
-          "200": {
-            "description": "List of candidates retrieved successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Candidate"
+          "responses": {
+            "201": {
+              "description": "Job created successfully.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Job"
                   }
                 }
               }
@@ -241,151 +145,253 @@
           }
         }
       },
-      "post": {
-        "summary": "Create a new candidate",
-        "description": "Register a new candidate",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
+      "/api/jobs/{jobId}": {
+        "get": {
+          "summary": "Get a job by ID",
+          "operationId": "getJobById",
+          "tags": ["Jobs"],
+          "parameters": [
+            {
+              "name": "jobId",
+              "in": "path",
+              "required": true,
+              "description": "ID of the job to retrieve",
               "schema": {
-                "$ref": "#/components/schemas/Candidate"
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Job retrieved successfully.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Job"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Job not found."
+            }
+          }
+        },
+        "put": {
+          "summary": "Update a job",
+          "operationId": "updateJob",
+          "tags": ["Jobs"],
+          "parameters": [
+            {
+              "name": "jobId",
+              "in": "path",
+              "required": true,
+              "description": "ID of the job to update",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "requestBody": {
+            "description": "Job object with updated information",
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Job"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Job updated successfully.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Job"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Job not found."
+            }
+          }
+        },
+        "delete": {
+          "summary": "Delete a job",
+          "operationId": "deleteJob",
+          "tags": ["Jobs"],
+          "parameters": [
+            {
+              "name": "jobId",
+              "in": "path",
+              "required": true,
+              "description": "ID of the job to delete",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "204": {
+              "description": "Job deleted successfully."
+            },
+            "404": {
+              "description": "Job not found."
+            }
+          }
+        }
+      },
+      "/api/employers": {
+        "get": {
+          "summary": "Get a list of all employers",
+          "operationId": "getEmployers",
+          "tags": ["Employers"],
+          "responses": {
+            "200": {
+              "description": "A list of employers.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/Employer"
+                    }
+                  }
+                }
               }
             }
           }
         },
-        "responses": {
-          "201": {
-            "description": "Candidate created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Candidate"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/candidates/{candidateId}": {
-      "get": {
-        "summary": "Get a candidate by ID",
-        "description": "Retrieve a candidate by their ID",
-        "parameters": [
-          {
-            "name": "candidateId",
-            "in": "path",
+        "post": {
+          "summary": "Create a new employer",
+          "operationId": "createEmployer",
+          "tags": ["Employers"],
+          "requestBody": {
+            "description": "Employer object that needs to be added",
             "required": true,
-            "description": "The ID of the candidate to return",
-            "schema": {
-              "type": "integer",
-              "format": "int64",
-              "minimum": 1
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Candidate retrieved successfully",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Candidate"
+                  "$ref": "#/components/schemas/Employer"
                 }
               }
             }
           },
-          "400": {
-            "description": "The specified candidate ID is invalid (not a number)"
-          },
-          "404": {
-            "description": "A candidate with the specified ID was not found"
-          },
-          "default": {
-            "description": "Unexpected error"
+          "responses": {
+            "201": {
+              "description": "Employer created successfully.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Employer"
+                  }
+                }
+              }
+            }
           }
         }
       },
-      "put": {
-        "summary": "Update a candidate",
-        "description": "Update a candidate's information",
-        "parameters": [
-          {
-            "name": "candidateId",
-            "in": "path",
-            "required": true,
-            "description": "The ID of the candidate to update",
-            "schema": {
-              "type": "integer",
-              "format": "int64",
-              "minimum": 1
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
+      "/api/employers/{employerId}": {
+        "get": {
+          "summary": "Get an employer by ID",
+          "operationId": "getEmployerById",
+          "tags": ["Employers"],
+          "parameters": [
+            {
+              "name": "employerId",
+              "in": "path",
+              "required": true,
+              "description": "ID of the employer to retrieve",
               "schema": {
-                "$ref": "#/components/schemas/Candidate"
+                "type": "string"
               }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Employer retrieved successfully.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Employer"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Employer not found."
             }
           }
         },
-        "responses": {
-          "200": {
-            "description": "Candidate updated successfully",
+        "put": {
+          "summary": "Update an employer",
+          "operationId": "updateEmployer",
+          "tags": ["Employers"],
+          "parameters": [
+            {
+              "name": "employerId",
+              "in": "path",
+              "required": true,
+              "description": "ID of the employer to update",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "requestBody": {
+            "description": "Employer object with updated information",
+            "required": true,
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Candidate"
+                  "$ref": "#/components/schemas/Employer"
                 }
               }
             }
           },
-          "400": {
-            "description": "The specified candidate ID is invalid (not a number)"
-          },
-          "404": {
-            "description": "A candidate with the specified ID was not found"
-          },
-          "default": {
-            "description": "Unexpected error"
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete a candidate",
-        "description": "Delete a candidate by their ID",
-        "parameters": [
-          {
-            "name": "candidateId",
-            "in": "path",
-            "required": true,
-            "description": "The ID of the candidate to delete",
-            "schema": {
-              "type": "integer",
-              "format": "int64",
-              "minimum": 1
+          "responses": {
+            "200": {
+              "description": "Employer updated successfully.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Employer"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Employer not found."
             }
           }
-        ],
-        "responses": {
-          "200": {
-            "description": "Candidate deleted successfully"
-          },
-          "400": {
-            "description": "The specified candidate ID is invalid (not a number)"
-          },
-          "404": {
-            "description": "A candidate with the specified ID was not found"
-          },
-          "default": {
-            "description": "Unexpected error"
+        },
+        "delete": {
+          "summary": "Delete an employer",
+          "operationId": "deleteEmployer",
+          "tags": ["Employers"],
+          "parameters": [
+            {
+              "name": "employerId",
+              "in": "path",
+              "required": true,
+              "description": "ID of the employer to delete",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "204": {
+              "description": "Employer deleted successfully."
+            },
+            "404": {
+              "description": "Employer not found."
+            }
           }
         }
       }
     }
   }
-}
