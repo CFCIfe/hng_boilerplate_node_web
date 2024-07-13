@@ -11,7 +11,7 @@
       "description": "Main (production) server"
     },
     {
-      "url": "https://staging-api.jobconnect.com",
+      "url": "https://localhost/3001",
       "description": "Internal staging server for testing"
     }
   ],
@@ -23,7 +23,35 @@
         "bearerFormat": "JWT"
       }
     },
-    "schemas": {}
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1
+          },
+          "firstName": {
+            "type": "string",
+            "example": "Olivia"
+          },
+          "lastName": {
+            "type": "string",
+            "example": "Pope"
+          },
+          "email": {
+            "type": "string",
+            "example": "olivia.pope@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "hashedpassword"
+          }
+        },
+        "required": ["firstName", "lastName", "email", "password"]
+      }
+    }
   },
   "paths": {}
 }
