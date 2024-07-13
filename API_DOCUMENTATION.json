@@ -53,13 +53,7 @@
             "example": 100000
           }
         },
-        "required": [
-          "title",
-          "description",
-          "company",
-          "location",
-          "salary"
-        ]
+        "required": ["title", "description", "company", "location", "salary"]
       },
       "Employer": {
         "type": "object",
@@ -85,12 +79,7 @@
             "example": "contact@techcorp.com"
           }
         },
-        "required": [
-          "name",
-          "address",
-          "contactNumber",
-          "email"
-        ]
+        "required": ["name", "address", "contactNumber", "email"]
       }
     }
   },
