@@ -51,6 +51,28 @@
         },
         "required": ["firstName", "lastName", "email", "password"]
       },
+      "UserResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1
+          },
+          "firstName": {
+            "type": "string",
+            "example": "Olivia"
+          },
+          "lastName": {
+            "type": "string",
+            "example": "Pope"
+          },
+          "email": {
+            "type": "string",
+            "example": "olivia.pope@example.com"
+          }
+        }
+      },
       "Candidate": {
         "type": "object",
         "properties": {
@@ -81,6 +103,7 @@
       "post": {
         "summary": "Register a new user",
         "description": "Create a new user account",
+        "tags": ["Auth"],
         "requestBody": {
           "required": true,
           "content": {
@@ -97,10 +120,26 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/User"
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "User created successfully"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/UserResponse"
+                    }
+                  }
                 }
               }
             }
+          },
+          "422":{
+            ""
           }
         }
       }
@@ -109,6 +148,12 @@
       "post": {
         "summary": "Login an existing user",
         "description": "Authenticate an existing user",
+        "tags": ["Auth"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -152,6 +197,12 @@
       "get": {
         "summary": "Get the current user's profile",
         "description": "Retrieve the current user's profile information",
+        "tags": ["Auth"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "User profile retrieved successfully",
@@ -168,6 +219,12 @@
       "put": {
         "summary": "Update the current user's profile",
         "description": "Update the current user's profile information",
+        "tags": ["Auth"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -194,6 +251,12 @@
       "delete": {
         "summary": "Delete the current user's profile",
         "description": "Delete the current user's profile",
+        "tags": ["Auth"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "User profile deleted successfully"
@@ -214,6 +277,12 @@
       "post": {
         "summary": "Logout the current user",
         "description": "Logout the current user",
+        "tags": ["Auth"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "User logged out successfully"
@@ -225,6 +294,12 @@
       "get": {
         "summary": "Get a list of all candidates",
         "description": "Retrieve a list of all candidates",
+        "tags": ["Candidates"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "List of candidates retrieved successfully",
@@ -244,6 +319,12 @@
       "post": {
         "summary": "Create a new candidate",
         "description": "Register a new candidate",
+        "tags": ["Candidates"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -272,6 +353,12 @@
       "get": {
         "summary": "Get a candidate by ID",
         "description": "Retrieve a candidate by their ID",
+        "tags": ["Candidates"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "candidateId",
@@ -310,6 +397,12 @@
       "put": {
         "summary": "Update a candidate",
         "description": "Update a candidate's information",
+        "tags": ["Candidates"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "candidateId",
@@ -358,6 +451,12 @@
       "delete": {
         "summary": "Delete a candidate",
         "description": "Delete a candidate by their ID",
+        "tags": ["Candidates"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "candidateId",
