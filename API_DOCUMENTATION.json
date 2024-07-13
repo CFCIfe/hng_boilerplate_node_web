@@ -50,8 +50,33 @@
           }
         },
         "required": ["firstName", "lastName", "email", "password"]
+      },
+      "Candidate": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1
+          },
+          "firstName": {
+            "type": "string",
+            "example": "Olivia"
+          },
+          "lastName": {
+            "type": "string",
+            "example": "Pope"
+          },
+          "email": {
+            "type": "string",
+            "example": "olivia.pope@example.com"
+          }
+        },
+        "required": ["firstName", "lastName", "email"]
       }
     }
   },
-  "paths": {}
+  "paths": {
+    
+  }
 }
