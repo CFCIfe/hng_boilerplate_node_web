@@ -456,6 +456,128 @@
     }
   },
   "paths": {
+    "/settings": {
+      "description": "Frontend request for settings page",
+      "get": {
+        "summary": "Get settings",
+        "description": "Get settings for the user",
+        "tags": ["Frontend"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Settings retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "theme": {
+                          "type": "string",
+                          "example": "dark"
+                        },
+                        "notifications": {
+                          "type": "boolean",
+                          "example": true
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/profile-settings": {
+      "description": "Frontend request for profile settings page",
+      "get": {
+        "summary": "Get profile settings",
+        "description": "Get profile settings for the user",
+        "tags": ["Frontend"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Profile settings retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "firstName": {
+                          "type": "string",
+                          "example": "Olivia"
+                        },
+                        "lastName": {
+                          "type": "string",
+                          "example": "Pope"
+                        },
+                        "email": {
+                          "type": "string",
+                          "example": "oliviapope@example.com"
+                        },
+                        "profilePicture": {
+                          "type": "string",
+                          "example": "https://example.com/olivia-pope.jpg"
+                        },
+                        "theme": {
+                          "type": "string",
+                          "example": "dark"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/contact_us": {
+      "description": "Frontend request for contact us page",
+      "post": {
+        "summary": "Contact us",
+        "description": "Send a message to the support team",
+        "tags": ["Frontend"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/pdf": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/auth/register": {
       "post": {
         "summary": "Register a new user",
