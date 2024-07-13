@@ -395,6 +395,11 @@
               "schema": {
                 "$ref": "#/components/schemas/Job"
               }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Job"
+              }
             }
           }
         },
@@ -629,6 +634,11 @@
               "schema": {
                 "$ref": "#/components/schemas/Employer"
               }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Employer"
+              }
             }
           }
         },
@@ -638,13 +648,22 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Employer"
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Employer"
+                    }
+                  }
                 }
               }
             }
           },
           "404": {
-            "description": "Employer not found."
+            "$ref": "#/components/responses/NotFound"
           }
         }
       },
@@ -673,7 +692,7 @@
             "description": "Employer deleted successfully."
           },
           "404": {
-            "description": "Employer not found."
+            "$ref": "#/components/responses/NotFound"
           }
         }
       }
