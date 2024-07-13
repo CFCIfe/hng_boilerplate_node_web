@@ -1,0 +1,410 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "title": "JobConnect API",
+      "description": "API for JobConnect job portal",
+      "version": "1.0.0"
+    },
+    "servers": [
+      {
+        "url": "https://api.jobconnect.com/v1",
+        "description": "Main (production) server"
+      },
+      {
+        "url": "https://staging-api.jobconnect.com",
+        "description": "Internal staging server for testing"
+      }
+    ],
+    "components": {
+      "securitySchemes": {
+        "bearerAuth": {
+          "type": "http",
+          "scheme": "bearer",
+          "bearerFormat": "JWT"
+        }
+      },
+      "schemas": {
+        "Job": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer",
+              "format": "int64",
+              "example": 1
+            },
+            "title": {
+              "type": "string",
+              "example": "Software Engineer"
+            },
+            "description": {
+              "type": "string",
+              "example": "Develop and maintain software applications."
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "available",
+                "pending",
+                "filled"
+              ],
+              "example": "available"
+            }
+          },
+          "required": [
+            "id",
+            "title",
+            "description",
+            "status"
+          ]
+        },
+        "Candidate": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer",
+              "format": "int64",
+              "example": 1
+            },
+            "firstName": {
+              "type": "string",
+              "example": "Olivia"
+            },
+            "lastName": {
+              "type": "string",
+              "example": "Pope"
+            },
+            "email": {
+              "type": "string",
+              "example": "olivia.pope@example.com"
+            }
+          },
+          "required": [
+            "id",
+            "firstName",
+            "lastName",
+            "email"
+          ]
+        },
+        "InvalidStatusError": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "integer",
+              "format": "int32",
+              "example": 400
+            },
+            "message": {
+              "type": "string",
+              "example": "Invalid status value"
+            }
+          }
+        },
+        "UnauthorizedError": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "integer",
+              "format": "int32",
+              "example": 401
+            },
+            "message": {
+              "type": "string",
+              "example": "Unauthorized access"
+            }
+          }
+        },
+        "JobNotFoundError": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "integer",
+              "format": "int32",
+              "example": 404
+            },
+            "message": {
+              "type": "string",
+              "example": "No jobs found matching the provided criteria"
+            }
+          }
+        },
+        "JobIdError": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "integer",
+              "format": "int32",
+              "example": 400
+            },
+            "message": {
+              "type": "string",
+              "example": "Invalid job ID"
+            }
+          }
+        },
+        "CandidateSearchError": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "integer",
+              "format": "int32",
+              "example": 400
+            },
+            "message": {
+              "type": "string",
+              "example": "Invalid search criteria"
+            }
+          }
+        },
+        "CandidateNotFoundError": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "integer",
+              "format": "int32",
+              "example": 404
+            },
+            "message": {
+              "type": "string",
+              "example": "No candidates found matching the provided criteria"
+            }
+          }
+        }
+      }
+    },
+    "paths": {
+      "/api/search/jobs": {
+        "get": {
+          "tags": [
+            "Search Endpoints for jobs and candidates"
+          ],
+          "summary": "Search for jobs based on various criteria",
+          "description": "Multiple status values can be provided with comma-separated strings",
+          "operationId": "searchJobs",
+          "parameters": [
+            {
+              "name": "status",
+              "in": "query",
+              "description": "Status values to filter jobs by",
+              "required": false,
+              "schema": {
+                "type": "string",
+                "default": "available",
+                "enum": [
+                  "available",
+                  "pending",
+                  "filled"
+                ]
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful operation",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/Job"
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Invalid status value",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/InvalidStatusError"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/UnauthorizedError"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "No jobs found matching the provided criteria",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/JobNotFoundError"
+                  }
+                }
+              }
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ]
+        }
+      },
+      "/api/search/jobs/{jobId}": {
+        "get": {
+          "tags": [
+            "Search Endpoints for jobs and candidates"
+          ],
+          "summary": "Retrieve a specific job by ID",
+          "description": "Retrieve job details by job ID",
+          "operationId": "getJobById",
+          "parameters": [
+            {
+              "name": "jobId",
+              "in": "path",
+              "description": "ID of the job to retrieve",
+              "required": true,
+              "schema": {
+                "type": "integer"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful operation",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Job"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Invalid job ID",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/JobIdError"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/UnauthorizedError"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Job not found",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/JobNotFoundError"
+                  }
+                }
+              }
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ]
+        }
+      },
+      "/api/search/candidates": {
+        "get": {
+          "tags": [
+            "Search Endpoints for jobs and candidates"
+          ],
+          "summary": "Search for candidates based on various criteria",
+          "description": "Search for candidates using various criteria",
+          "operationId": "searchCandidates",
+          "parameters": [
+            {
+              "name": "firstName",
+              "in": "query",
+              "description": "First name of the candidate",
+              "required": false,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "lastName",
+              "in": "query",
+              "description": "Last name of the candidate",
+              "required": false,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "email",
+              "in": "query",
+              "description": "Email of the candidate",
+              "required": false,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful operation",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/Candidate"
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Invalid search criteria",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/CandidateSearchError"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/UnauthorizedError"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "No candidates found matching the provided criteria",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/CandidateNotFoundError"
+                  }
+                }
+              }
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ]
+        }
+      }
+    }
+  }
