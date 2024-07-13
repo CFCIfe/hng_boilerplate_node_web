@@ -80,12 +80,82 @@
           }
         },
         "required": ["name", "address", "contactNumber", "email"]
+      },
+      "JobList": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Job"
+        }
+      },
+      "Candidate": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "12345"
+          },
+          "name": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "email": {
+            "type": "string",
+            "example": "john.doe@example.com"
+          }
+        },
+        "required": ["name", "email"]
       }
     }
   },
   "paths": {
-    "api/search/candidates/{candidateId}":{
-      
+    "/api/search/recently-posted-jobs": {
+      "get": {
+        "summary": "Retrieve a list of recently posted jobs",
+        "description": "Retrieve a list of recently posted jobs",
+        "responses": {
+          "200": {
+            "description": "List of jobs retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/search/candidates/{candidateId}": {
+      "get": {
+        "summary": "Retrieve a specific candidate by ID",
+        "description": "Retrieve a specific candidate by ID",
+        "parameters": [
+          {
+            "name": "candidateId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Candidate retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Candidate"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Candidate not found"
+          }
+        }
+      }
     },
     "/api/jobs": {
       "get": {
